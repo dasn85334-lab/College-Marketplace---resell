@@ -1,8 +1,24 @@
-import Link from 'next/link';
-import { getServerSession } from 'next-auth';
+"use client";
 
-export default async function Navbar() {
-  const session = await getServerSession();
+import { useEffect, useState } from "react";
+import Link from 'next/link';
+import { auth } from "@/lib/firebase";
+import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
+
+export default function Navbar() {
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const handleLogin = async () => {
+    const provider = new GoogleAuthProvider();
+    await signInWithPopup(auth, provider);
+  };
 
   return (
     <nav className="flex items-center justify-between p-6 border-b border-white/10">
@@ -16,14 +32,25 @@ export default async function Navbar() {
         <Link href="/team" className="hover:text-blue-400 transition-colors">Team</Link>
         
         {/* User Account / Profile Logic */}
-        {session ? (
-          <Link href="/dashboard" className="bg-white/10 px-4 py-2 rounded-full text-sm hover:bg-white/20 transition-all">
-            Dashboard
-          </Link>
+        {user ? (
+          <div className="flex gap-4 items-center">
+            <Link href="/dashboard" className="bg-white/10 px-4 py-2 rounded-full text-sm hover:bg-white/20 transition-all">
+              Dashboard
+            </Link>
+            <button 
+              onClick={() => signOut(auth)} 
+              className="text-sm text-red-400 hover:text-red-300 transition-colors"
+            >
+              Logout
+            </button>
+          </div>
         ) : (
-          <Link href="/api/auth/signin" className="bg-blue-600 px-4 py-2 rounded-full text-sm hover:bg-blue-500 transition-all">
+          <button 
+            onClick={handleLogin} 
+            className="bg-blue-600 px-4 py-2 rounded-full text-sm hover:bg-blue-500 transition-all"
+          >
             Login
-          </Link>
+          </button>
         )}
       </div>
     </nav>

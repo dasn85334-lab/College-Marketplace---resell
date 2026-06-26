@@ -1,33 +1,61 @@
-import prisma from "@/lib/prisma";
-import { getServerSession } from "next-auth";
+"use client";
+import { useEffect, useState } from "react";
+import { db, auth } from "@/lib/firebase";
+import { collection, query, where, getDocs, orderBy } from "firebase/firestore";
+import Link from "next/link";
 
-export default async function DashboardPage() {
-  const session = await getServerSession();
+export default function DashboardPage() {
+  const [products, setProducts] = useState<any[]>([]);
 
-  if (!session) {
-    return <div className="p-10">Please login to view dashboard.</div>;
-  }
+  useEffect(() => {
+    const fetchMyProducts = async () => {
+      // Safety check: ensure user is logged in
+      if (!auth.currentUser) return;
 
-  // Fetch the user's products
-  const products = await prisma.product.findMany({
-    where: { seller: { email: session.user?.email || "" } }
-  });
+      const q = query(
+        collection(db, "products"),
+        where("sellerId", "==", auth.currentUser.uid),
+        orderBy("createdAt", "desc")
+      );
+      const snap = await getDocs(q);
+      setProducts(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    };
+    fetchMyProducts();
+  }, []);
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-12 min-h-screen">
-      <h1 className="text-4xl font-bold mb-8">Dashboard</h1>
-      <p className="mb-8">Welcome back, {session.user?.name}</p>
-      
-      <h2 className="text-2xl font-semibold mb-4">Your Listings</h2>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {products.length === 0 && <p>You haven't listed any items yet.</p>}
-        {products.map((p) => (
-          <div key={p.id} className="glass-card p-6 rounded-2xl">
-            <h3 className="font-bold">{p.title}</h3>
-            <p>₹{p.price}</p>
+    <main className="min-h-screen pt-24 px-6 text-white bg-[#0a0a0a]">
+      <div className="max-w-6xl mx-auto">
+        <h1 className="text-4xl font-bold mb-10">Your Products</h1>
+        
+        {products.length === 0 ? (
+            <p className="text-white/50">You haven't listed any items yet.</p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {products.map((p) => (
+              // This Link wrapper makes the whole card clickable
+              <Link href={`/products/${p.id}`} key={p.id} className="block">
+                <div className="bg-[#1a1a1a] border border-white/10 p-6 rounded-2xl hover:border-indigo-500 transition-all cursor-pointer group">
+                  {p.imageUrl && (
+                    <img 
+                      src={p.imageUrl} 
+                      alt={p.tile} 
+                      className="w-full h-40 object-cover rounded-lg mb-4" 
+                    />
+                  )}
+                  <h2 className="text-xl font-bold text-white group-hover:text-indigo-400 transition-colors">
+                    {p.tile}
+                  </h2>
+                  <p className="text-indigo-400 font-bold mt-1">₹{p.price}</p>
+                  <p className="text-white/60 text-sm mt-2 line-clamp-2">
+                    {p.description}
+                  </p>
+                </div>
+              </Link>
+            ))}
           </div>
-        ))}
+        )}
       </div>
-    </div>
+    </main>
   );
 }

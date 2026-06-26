@@ -1,29 +1,34 @@
-import prisma from '@/lib/prisma';
-import { notFound } from 'next/navigation';
+"use client";
+import { useEffect, useState } from "react";
+import { db } from "@/lib/firebase";
+import { doc, getDoc } from "firebase/firestore";
+import { useParams } from "next/navigation";
 
-// This must be a default export function that returns JSX
-export default async function ProductDetailPage({ params }: { params: { id: string } }) {
-  const { id } = await params;
+export default function ProductDetailPage() {
+  const { id } = useParams();
+  const [p, setP] = useState<any>(null);
 
-  // Fetch the product from the database
-  const product = await prisma.product.findUnique({
-    where: { id: id },
-    include: { seller: true }
-  });
+  useEffect(() => {
+    const fetchProduct = async () => {
+      const snap = await getDoc(doc(db, "products", id as string));
+      if (snap.exists()) setP({ id: snap.id, ...snap.data() });
+    };
+    fetchProduct();
+  }, [id]);
 
-  if (!product) {
-    notFound();
-  }
+  if (!p) return <div className="text-white p-10">Loading...</div>;
 
   return (
-    <main className="min-h-screen pt-24 px-6 text-white">
-      <div className="max-w-4xl mx-auto p-8 rounded-2xl bg-white/5 border border-white/10">
-        <h1 className="text-4xl font-bold mb-4">{product.title}</h1>
-        <p className="text-2xl text-indigo-400 mb-6">₹{product.price}</p>
-        <p className="text-gray-300">{product.description}</p>
-        <p className="mt-4 text-gray-500">Category: {product.category}</p>
-        <p className="text-gray-500">Condition: {product.condition}</p>
-      </div>
+    <main className="p-10 max-w-2xl mx-auto text-white">
+      {p.imageUrl && <img src={p.imageUrl} className="w-full h-80 object-cover rounded-xl" />}
+      <h1 className="text-4xl font-bold mt-6">{p.tile}</h1>
+      <p className="text-2xl text-indigo-400 mt-2">₹{p.price}</p>
+      <p className="mt-4">{p.description}</p>
+      <p className="mt-2 text-white/50">Condition: {p.condition}</p>
+      
+      <a href={`mailto:${p.sellerEmail}`} className="block mt-10 bg-green-600 text-center py-4 rounded-xl font-bold">
+        Contact Seller via Email
+      </a>
     </main>
   );
 }
