@@ -87,7 +87,7 @@ export default function SellPage() {
         }
 
         imageUrls.push(
-  uploadData.secure_url
+  uploadData.url
 );
       }
 
@@ -124,7 +124,7 @@ export default function SellPage() {
           );
         }
 
-        pdfUrl = pdfData.secure_url;
+        pdfUrl = pdfData.url;
       }
 
       const form =
@@ -133,52 +133,58 @@ export default function SellPage() {
       const formData =
         new FormData(form);
 
-      await addDoc(
-        collection(db, 'products'),
-        {
-          title:
-            formData.get('title'),
+      const productData = {
+  title: String(
+    formData.get('title') || ''
+  ),
 
-          price: Number(
-            formData.get('price')
-          ),
+  price: Number(
+    formData.get('price') || 0
+  ),
 
-          description:
-            formData.get(
-              'description'
-            ),
+  description: String(
+    formData.get('description') || ''
+  ),
 
-          category:
-            formData.get(
-              'category'
-            ),
+  category: String(
+    formData.get('category') || 'others'
+  ),
 
-          condition:
-            formData.get(
-              'condition'
-            ),
+  condition: String(
+    formData.get('condition') || 'New'
+  ),
 
-          images: imageUrls,
+  images: imageUrls.filter(Boolean),
 
-          imageUrl:
-            imageUrls[0] || '',
+  imageUrl:
+    imageUrls[0] || '',
 
-          pdfUrl,
+  pdfUrl:
+    pdfUrl || '',
 
-          sellerEmail:
-            session?.user
-              ?.email ||
-            'anonymous',
+  sellerEmail:
+    session?.user?.email ||
+    'anonymous',
 
-          sellerName:
-            session?.user
-              ?.name ||
-            'anonymous',
+  sellerName:
+    session?.user?.name ||
+    'anonymous',
 
-          createdAt:
-            serverTimestamp(),
-        }
-      );
+  createdAt:
+    serverTimestamp(),
+};
+
+console.log(
+  'PRODUCT DATA:',
+  productData
+);
+
+console.log('PRODUCT DATA:', productData);
+
+await addDoc(
+  collection(db, 'products'),
+  productData
+);
 
       alert(
         'Item listed successfully!'
