@@ -217,23 +217,30 @@ export default function DashboardPage() {
 
                   <div className="flex gap-3 mt-6">
 
-                    <Link
-                      href={`/marketplace/${item.id}`}
-                      className="flex-1 text-center py-3 rounded-xl bg-blue-600 hover:bg-blue-700 transition"
-                    >
-                      View
-                    </Link>
+  <Link
+    href={`/marketplace/${item.id}`}
+    className="flex-1 text-center py-3 rounded-xl bg-blue-600 hover:bg-blue-700 transition"
+  >
+    View
+  </Link>
 
-                    <button
-                      onClick={() =>
-                        handleDelete(item.id)
-                      }
-                      className="flex-1 py-3 rounded-xl bg-red-600 hover:bg-red-700 transition"
-                    >
-                      Delete
-                    </button>
+  <Link
+    href={`/edit/${item.id}`}
+    className="flex-1 text-center py-3 rounded-xl bg-yellow-500 hover:bg-yellow-600 transition"
+  >
+    Edit
+  </Link>
 
-                  </div>
+  <button
+    onClick={() =>
+      handleDelete(item.id)
+    }
+    className="flex-1 py-3 rounded-xl bg-red-600 hover:bg-red-700 transition"
+  >
+    Delete
+  </button>
+
+</div>
 
                 </div>
               </div>
