@@ -2,11 +2,17 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { useSession, signOut } from 'next-auth/react';
+import {
+  useSession,
+  signOut,
+} from 'next-auth/react';
 
 export default function Navbar() {
-  const { data: session } = useSession();
-  const [open, setOpen] = useState(false);
+  const { data: session } =
+    useSession();
+
+  const [open, setOpen] =
+    useState(false);
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-black/70 border-b border-white/10">
@@ -21,11 +27,33 @@ export default function Navbar() {
 
         {/* Desktop */}
         <div className="hidden md:flex items-center gap-6">
-          <Link href="/marketplace">Marketplace</Link>
-          <Link href="/sell">Sell</Link>
+
+          <Link
+            href="/marketplace"
+            className="hover:text-blue-400 transition"
+          >
+            Marketplace
+          </Link>
+
+          <Link
+            href="/sell"
+            className="hover:text-blue-400 transition"
+          >
+            Sell
+          </Link>
+
+          <Link
+            href="/team"
+            className="hover:text-blue-400 transition"
+          >
+            Team
+          </Link>
 
           {session && (
-            <Link href="/dashboard">
+            <Link
+              href="/dashboard"
+              className="hover:text-blue-400 transition"
+            >
               Dashboard
             </Link>
           )}
@@ -37,29 +65,33 @@ export default function Navbar() {
                   callbackUrl: '/',
                 })
               }
-              className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700"
+              className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 transition"
             >
               Logout
             </button>
           ) : (
             <Link
               href="/login"
-              className="px-4 py-2 rounded-xl bg-blue-600"
+              className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 transition"
             >
               Login
             </Link>
           )}
         </div>
 
-        {/* Mobile Button */}
+        {/* Mobile Menu Button */}
         <button
-          onClick={() => setOpen(!open)}
+          onClick={() =>
+            setOpen(!open)
+          }
           className="md:hidden text-2xl"
         >
           ☰
         </button>
+
       </div>
 
+      {/* Mobile Menu */}
       {open && (
         <div className="md:hidden border-t border-white/10 bg-black/95 backdrop-blur-xl">
 
@@ -67,22 +99,37 @@ export default function Navbar() {
 
             <Link
               href="/marketplace"
-              onClick={() => setOpen(false)}
+              onClick={() =>
+                setOpen(false)
+              }
             >
               Marketplace
             </Link>
 
             <Link
               href="/sell"
-              onClick={() => setOpen(false)}
+              onClick={() =>
+                setOpen(false)
+              }
             >
               Sell
+            </Link>
+
+            <Link
+              href="/team"
+              onClick={() =>
+                setOpen(false)
+              }
+            >
+              Team
             </Link>
 
             {session && (
               <Link
                 href="/dashboard"
-                onClick={() => setOpen(false)}
+                onClick={() =>
+                  setOpen(false)
+                }
               >
                 Dashboard
               </Link>
@@ -109,6 +156,7 @@ export default function Navbar() {
             )}
 
           </div>
+
         </div>
       )}
     </nav>
