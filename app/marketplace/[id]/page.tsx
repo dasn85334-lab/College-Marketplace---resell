@@ -87,9 +87,13 @@ export default function ProductDetailPage() {
             <div className="relative w-full h-[500px] rounded-3xl overflow-hidden border border-white/10">
               <Image
                 src={
-                  selectedImage ||
-                  '/placeholder.png'
-                }
+  selectedImage
+    ? selectedImage.replace(
+        'http://',
+        'https://'
+      )
+    : '/placeholder.png'
+}
                 alt={product.title}
                 fill
                 className="object-cover"

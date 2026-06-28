@@ -104,10 +104,14 @@ function MarketplaceInner() {
               <Link href={`/marketplace/${item.id}`}>
                 <div className="h-48 relative rounded-2xl overflow-hidden mb-4">
                   <Image
-                    src={
-                      item.imageUrl ||
-                      '/placeholder.png'
-                    }
+  src={
+    item.imageUrl
+      ? item.imageUrl.replace(
+          'http://',
+          'https://'
+        )
+      : '/placeholder.png'
+  }
                     alt={item.title || 'Product'}
                     fill
                     className="object-cover"
