@@ -230,6 +230,12 @@ export default function ProductDetailPage() {
                     'Not available'}
                 </span>
               </div>
+              <a
+  href={`mailto:${product.sellerEmail}?subject=Interested in ${product.title}&body=Hi ${product.sellerName}, I am interested in your listing "${product.title}".`}
+  className="block w-full mt-6 bg-blue-600 hover:bg-blue-700 text-center py-4 rounded-xl font-semibold transition"
+>
+  Contact Seller
+</a>
 
             </div>
 
